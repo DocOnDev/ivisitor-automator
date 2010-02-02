@@ -1,6 +1,8 @@
 INPUT='rsvps.txt'
 OUTPUT='automated_name_entry.html'
-COMPANY='Clojure'
+COMPANY='ChiRuby'
+VISITING='Norton, Michael'
+VISIT_DATE='2/2/2010'
 
 preamble = <<eos
 <?xml version="1.0" encoding="UTF-8"?>
@@ -59,7 +61,7 @@ def first_entry(first, last, script)
 <tr>
   <td>select</td>
   <td>visiting</td>
-  <td>label=Cronemeyer, Joshua</td>
+  <td>label=#{VISITING}</td>
 </tr>
 <tr>
   <td>click</td>
@@ -82,9 +84,19 @@ def first_entry(first, last, script)
   <td>label=6:00 PM</td>
 </tr>
 <tr>
+  <td>type</td>
+  <td>dateStart</td>
+  <td>#{VISIT_DATE}</td>
+</tr>
+<tr>
   <td>select</td>
   <td>endVisit</td>
-  <td>label=8:00 PM</td>
+  <td>label=9:00 PM</td>
+</tr>
+<tr>
+  <td>type</td>
+  <td>dateEnd</td>
+  <td>#{VISIT_DATE}</td>
 </tr>
 <tr>
   <td>clickAndWait</td>
