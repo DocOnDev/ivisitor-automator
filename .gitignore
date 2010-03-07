@@ -1,0 +1,4 @@
+*.swp
+lib/*.swp
+spec/*.swp
+resource/*.swp
