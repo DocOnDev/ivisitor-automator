@@ -1,81 +1,87 @@
 class EmitSeleneese
-    def initialize(visit_date, visiting='Norton, Michael', company='Chi Ruby',
-        start_time='6:00 PM', end_time='9:00 PM', input='resource/rsvps.txt')
-        
-        @input = input
-        @output = 'automated_name_entry.html'
-        @company = company
-        @visiting = visiting
-        @visit_date = visit_date
-        @start_time = start_time
-        @end_time = end_time
-        @script = []
-        @rsvps = ""
+  def initialize(visit_date, visiting='Norton, Michael', company='Chi Ruby',
+          start_time='6:00 PM', end_time='9:00 PM', input='resource/rsvps.txt')
+
+    visiting ||= 'Norton, Michael'
+    company ||='Chi Ruby'
+    start_time ||='6:00 PM'
+    end_time ||='9:00 PM'
+    input ||='resource/rsvps.txt'
+
+    @input = input
+    @output = 'automated_name_entry.html'
+    @company = company
+    @visiting = visiting
+    @visit_date = visit_date
+    @start_time = start_time
+    @end_time = end_time
+    @script = []
+    @rsvps = ""
+  end
+
+  def emit
+    load_names
+    report
+    build
+    write
+  end
+
+  def load_names
+    @rsvps = read_names_from_input_file
+  end
+
+  def build
+    create_selenium_script(@rsvps)
+  end
+
+  def report
+    puts "Writing #{@output} with #{name_count} rsvps"
+  end
+
+  def write(output=@output)
+    write_script_to_output(@script, output)
+  end
+
+  def name_count
+    @rsvps.size
+  end
+
+  def create_first_entry
+    first, last = parse_name(@rsvps.first)
+    @rsvps.delete_at(0)
+    return first_entry(first, last)
+  end
+
+  def parse_name(full_name)
+    first, last = full_name.split(" ")
+    last = "Unknown" if last == ""
+    return first, last
+  end
+
+  private
+  def create_selenium_script(rsvps)
+    @script << create_script_header
+    @script << create_first_entry
+
+    rsvps.each_with_index do |rsvp, index|
+      first, last = parse_name(rsvp)
+      count = index%10 + 1
+      if count == 1 && index != 0
+        @script << "<tr>\n"
+        @script << "<td>clickAndWait</td>\n"
+        @script << "<td>More</td>\n"
+        @script << "<td></td>\n"
+        @script << "</tr>\n"
+      end
+      type_it("first#{count}", first, @script)
+      type_it("last#{count}", last, @script)
+      type_it("company#{count}", @company, @script)
     end
+    @script << create_script_footer
+  end
 
-    def emit
-        load_names
-        report
-        build
-        write
-    end
-
-    def load_names
-        @rsvps = read_names_from_input_file
-    end
-
-    def build
-        create_selenium_script(@rsvps)
-    end
-
-    def report
-        puts "Writing #{@output} with #{name_count} rsvps"
-    end
-
-    def write(output=@output)
-        write_script_to_output(@script, output)
-    end
-
-    def name_count
-        @rsvps.size
-    end
-
-    def create_first_entry
-        first, last = parse_name(@rsvps.first)
-        @rsvps.delete_at(0)
-        return first_entry(first, last)
-    end
-
-    def parse_name(full_name)
-        first, last = full_name.split(" ")
-        last = "Unknown" if last == ""
-        return first, last
-    end
-
-private
-    def create_selenium_script(rsvps)
-        @script << create_script_header
-        @script << create_first_entry
-
-        rsvps.each_with_index do |rsvp, index|
-          first, last = parse_name(rsvp)
-          count = index%10 + 1
-          if count == 1 && index != 0
-            @script << "<tr>\n"
-              @script << "<td>clickAndWait</td>\n"
-              @script << "<td>More</td>\n"
-              @script << "<td></td>\n"
-            @script << "</tr>\n"
-          end
-          type_it("first#{count}", first, @script)
-          type_it("last#{count}", last, @script)
-          type_it("company#{count}", @company, @script)
-        end
-        @script << create_script_footer
-    end
-
-    def first_entry(first, last)
-      return <<eos
+  def first_entry(first, last)
+    return <<eos
         <tr>
           <td>type</td>
           <td>firstName</td>
@@ -137,17 +143,17 @@ private
           <td></td>
         </tr>
 eos
-    end
+  end
 
-    def read_names_from_input_file
-        IO.readlines(@input)
-    end
+  def read_names_from_input_file
+    IO.readlines(@input)
+  end
 
-    def write_script_to_output(script=@script, output=@output)
-        File.open(output, 'w'){|f| f.write(script)}
-    end
+  def write_script_to_output(script=@script, output=@output)
+    File.open(output, 'w'){|f| f.write(script)}
+  end
 
-    def create_script_header
+  def create_script_header
     return <<eos
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -178,9 +184,9 @@ eos
                       <td></td>
                     </tr>
 eos
-    end
+  end
 
-    def create_script_footer
+  def create_script_footer
     return <<eos
               <tr>
                 <td>clickAndWait</td>
@@ -191,14 +197,14 @@ eos
           </body>
         </html>
 eos
-    end
+  end
 
-    def type_it(field, value, script)
-      script << "<tr>\n"
-      script << "<td>type</td>\n"
-      script << "<td>#{field}</td>\n"
-      script << "<td>#{value}</td>\n"
-      script << "</tr>\n"
-    end
+  def type_it(field, value, script)
+    script << "<tr>\n"
+    script << "<td>type</td>\n"
+    script << "<td>#{field}</td>\n"
+    script << "<td>#{value}</td>\n"
+    script << "</tr>\n"
+  end
 
 end
