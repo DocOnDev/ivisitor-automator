@@ -1,14 +1,18 @@
 The ivisitor-automator is a very quick and dirty ruby script for creating a seleneese script that selenium IDE can use to automate entering people into the ivisitor system.
 
 Instructions:
-1. replace the contents of rsvps.txt with your guest list
-2. change dates and times as necessary in emit_seleneese.rb
-3. run 'ruby emit_seleneese.rb'
-4. run the resulting html file with selenium IDE
+1. replace the contents of resource/rsvps.txt with your guest list
+2. run "ruby make-visit-script.rb '12/25/2000' ['Last, First'[,'Event]]"
+   Where 12/25/2000 is the date of the event
+   Last, First is the name of the individual being visited in the iVisitor system
+   Event is the name of the event (ChiRuby, ChiClojure, Scala, etc.)
+   - There are other paramters. Read the source for more information.
+3. run the resulting html file with selenium IDE
 
 Known defects:
 -The script currently doesn't handle middle names or initials.
 -The resulting selenium script has trouble getting started because the page uses frames.  Some fiddling will probably be required to get the browser in the right state of mind to run the script.
 
 TODO:
-parameterize a bit more to make it more reuseable.  Right now dates and times are hardcoded in the emit_seleneese script.  
+Improve management of paramters
+Provide a help screen

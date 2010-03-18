@@ -1,16 +1,16 @@
 class EmitSeleneese
-  def initialize(visit_date, visiting='Norton, Michael', company='Chi Ruby',
+  def initialize(visit_date, visiting='Norton, Michael', event='Chi Ruby',
           start_time='6:00 PM', end_time='9:00 PM', input='resource/rsvps.txt')
 
     visiting ||= 'Norton, Michael'
-    company ||='Chi Ruby'
+    event ||='Chi Ruby'
     start_time ||='6:00 PM'
     end_time ||='9:00 PM'
     input ||='resource/rsvps.txt'
 
     @input = input
     @output = 'automated_name_entry.html'
-    @company = company
+    @company = event
     @visiting = visiting
     @visit_date = visit_date
     @start_time = start_time
