@@ -25,7 +25,7 @@ class EmitSeleneese
     end
 
     def build
-        create_selenium_script(rsvps)
+        create_selenium_script(@rsvps)
     end
 
     def report
